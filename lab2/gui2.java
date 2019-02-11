@@ -31,8 +31,8 @@ class FontChooserGUI extends javax.swing.JFrame
         //create a GridLayout JPanel with two vertically stacked JCheckBoxes
         JPanel checkBoxGroup = new JPanel();
         checkBoxGroup.setLayout(new GridLayout(2, 1));
-	JCheckBox bold = new JCheckBox("Bold");
-	JCheckBox italic = new JCheckBox("Italic");
+		JCheckBox bold = new JCheckBox("Bold");
+		JCheckBox italic = new JCheckBox("Italic");
         checkBoxGroup.add(bold);
         checkBoxGroup.add(italic);
 
@@ -57,25 +57,25 @@ class FontChooserGUI extends javax.swing.JFrame
         //add button group JPanels, and other Components to content pane
         panel.add(checkBoxGroup);
         panel.add(radioButtonGroup);
-	JTextField text = new JTextField(25);
+		JTextField text = new JTextField(25);
         panel.add(text);
-	JButton ok = new JButton("OK");
+		JButton ok = new JButton("OK");
         panel.add(ok);
 		
-	//event-handling for JRadioButtons
-	times.addActionListener(new TextButtonListener(text));
-	helvetica.addActionListener(new TextButtonListener(text));
-	courier.addActionListener(new TextButtonListener(text));
+		//event-handling for JRadioButtons
+		times.addActionListener(new TextButtonListener(text));
+		helvetica.addActionListener(new TextButtonListener(text));
+		courier.addActionListener(new TextButtonListener(text));
 
-	//event-handling for OK button
-	ok.addActionListener(e -> System.out.println(text.getText()));
+		//event-handling for OK button
+		ok.addActionListener(e -> System.out.println(text.getText()));
 
-	//event-handling for JCheckBoxes
-	bold.addItemListener(new FontStyleListener(text));
-	italic.addItemListener(new FontStyleListener(text));
+		//event-handling for JCheckBoxes
+		bold.addItemListener(new FontStyleListener(text));
+		italic.addItemListener(new FontStyleListener(text));
 
-	//click times JRadioButton to default it to selected as well as to set text
-	times.doClick();
+		//click times JRadioButton to default it to selected as well as to set text
+		times.doClick();
 		
         //enable visibility
         this.setVisible(true);
