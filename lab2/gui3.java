@@ -20,6 +20,7 @@ class MouseProgram extends JFrame
     Random r;
     String s1, s2, s3;
     JLabel mLabel;
+    JLayeredPane mPanel;
 
     //constructor, contains gui etc.
     public MouseProgram()
@@ -38,8 +39,8 @@ class MouseProgram extends JFrame
         panel.setLayout(new BorderLayout());
         this.setSize(1000, 1000);
 
-        //create panel for mouse motion application, set it to centre of window's BorderLayout
-        JPanel mPanel = new JPanel();
+        //create layered pane for mouse motion application (allows JPanels to change displayed layer), set it to centre of window's BorderLayout
+        mPanel = new JLayeredPane();
         mPanel.setLayout(null);
         panel.add(mPanel, BorderLayout.CENTER);
 
@@ -78,13 +79,19 @@ class MouseProgram extends JFrame
         p2.addMouseMotionListener(new MouseListener());
         p3.addMouseMotionListener(new MouseListener());
 
-        p1.addMouseMotionListener(new PanelMover(p1));
-        p2.addMouseMotionListener(new PanelMover(p2));
-        p3.addMouseMotionListener(new PanelMover(p3));
+        p1.addMouseListener(new PanelMover());
+        p2.addMouseListener(new PanelMover());
+        p3.addMouseListener(new PanelMover());
 
         //enable visibility
         this.setVisible(true);
     }
+
+    //declare and initialise variables to hold x and y positions of JPanel and mouseclick for drag events
+    int px = 0;
+    int py = 0;
+    int mx = 0;
+    int my = 0;
 
     //nested class updates string constituents of mLabel text then updates
     class MouseListener extends MouseAdapter
@@ -111,46 +118,44 @@ class MouseProgram extends JFrame
             //update mLabel
             mLabel.setText("R: " + s1 + " G: " + s2 + " B: " + s3);
         }
-    }
-}
 
-class PanelMover extends MouseAdapter
-{
-    JPanel panel;
-    int x, y;
-    boolean drag = false;
-    
-    public PanelMover(JPanel panel)
-    {
-        this.panel = panel;
-    }
-
-    public void mousePressed(MouseEvent e) 
-    {
-        this.x = e.getX();
-        this.y = e.getY();
-    }
-
-    public void mouseDragged(MouseEvent e) 
-    {
-        panel.setLocation(e.getLocationOnScreen().x - this.x, e.getLocationOnScreen().y - this.y);
-    }
-}
-
-/* public void handleDrag(final JPanel panel){
-    panel.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mousePressed(MouseEvent me) {
-             x = me.getX();
-             y = me.getY();
+        //mouse dragging will succeed a mousepress event, where the four vars are set; used to calculate where to reposition JPanel to
+        public void mouseDragged(MouseEvent e) 
+        {
+            //set location to the original panel location + (location of mouse - original mousepress location) for x and y
+            ((JPanel) e.getSource()).setLocation(px + (e.getLocationOnScreen().x - mx), py + (e.getLocationOnScreen().y - my));
         }
-    });
-    panel.addMouseMotionListener(new MouseMotionAdapter() {
-        @Override
-        public void mouseDragged(MouseEvent me) {
-            me.translatePoint(me.getComponent().getLocation().x-x, me.getComponent().getLocation().y-y);
-            panel.setLocation(me.getX(), me.getY());
+    }
+
+    //panelmover generates the four variables required to accurately calculate the movement coordinates for JPanels
+    class PanelMover extends MouseAdapter
+    {
+        //drag boolean used to control the timing so one instance of a mouse press event is isolated
+        boolean drag = false;
+
+        //mousepress isolates one event, gets x,y positions of panel and mousepress
+        public void mousePressed(MouseEvent e) 
+        {
+            if (!this.drag)
+            {
+                //JPanel x, y positions
+                px = ((JPanel) e.getSource()).getX();
+                py = ((JPanel) e.getSource()).getY();
+                //mousePress event x, y positions
+                mx = e.getLocationOnScreen().x;
+                my = e.getLocationOnScreen().y;
+                
+                //move pressed JPanel to the front of mPanel
+                mPanel.moveToFront((JPanel) e.getSource());
+            }
+            //set drag to false to prevent any more coordinate gets until mouse is released
+            this.drag = true;
         }
-    });
+
+        //reset drag boolean to false once drag event concludes (mouse is released)
+        public void mouseReleased(MouseEvent e)
+        {
+            this.drag = false;
+        }
+    }
 }
-*/
